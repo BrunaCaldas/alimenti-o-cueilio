@@ -26,6 +26,9 @@ var ventinho;
 var pisca;
 var buchinho;
 var tristeza;
+var balaum;
+var mudo;
+
 
 function preload(){
   backgroundI = loadImage("toyStory.jpg");
@@ -34,6 +37,11 @@ function preload(){
   pisca = loadAnimation("blink_1.png","blink_2.png","blink_3.png");
   buchinho = loadAnimation("eat_0.png","eat_1.png","eat_2.png","eat_3.png","eat_4.png");
   tristeza = loadAnimation ("sad_1.png","sad_2.png","sad_3.png");
+  backyardigans = loadSound("sound1.mp3");
+  cut = loadSound("rope_cut.mp3");
+  sadness = loadSound("sad.wav");
+  happiness = loadSound("eating_sound.mp3");
+  ventinho = loadSound("air.wav");
   buchinho.looping = false;
   tristeza.looping = false;
 }
@@ -44,7 +52,8 @@ function setup()
 {
   createCanvas(500,700);
   engine = Engine.create();
-  world = engine.world;
+  world = engine.world; backyardigans.play();
+  backyardigans.setVolume(0.5);
  
   rectMode(CENTER);
   ellipseMode(RADIUS);
@@ -60,7 +69,7 @@ function setup()
   futcha = Bodies.circle (300, 300, 15);
   Matter.Composite.add(korda.body,futcha);
   lassos = new Vinculo (korda,futcha); 
-  pomposo = createSprite (250,530,100,100);
+  pomposo = createSprite (420,530,100,100);
   pomposo.addImage (sansao);
   pomposo.scale = 0.4
   pomposo.addAnimation("piscando", pisca);
@@ -71,6 +80,17 @@ function setup()
   enter.position(220,30);
   enter.size(50,50);
   enter.mouseClicked(deixar);
+
+  balaum = createImg ("balloon.png");
+  balaum.position(10,250);
+  balaum.size(150,100);
+  balaum.mouseClicked(sopru);
+
+
+  mudo = createImg ("mute.png");
+  mudo.position(450,20);
+  mudo.size(50,50);
+  mudo.mouseClicked(cilensio);
 }
 
 function draw() 
@@ -87,15 +107,19 @@ function draw()
   drawSprites();
   if(colissao(futcha,pomposo)===true){
   pomposo.changeAnimation("comendo")
+  happiness.play();
   }
   if(futcha !== null && futcha.position.y >= 650){
     pomposo.changeAnimation("bolado")
     futcha = null
+    backyardigans.stop()
+    sadness.play();
   }
 
 }
 
 function deixar(){
+cut.play();
 korda.break();
 lassos.separar();
 lassos=null;
@@ -116,4 +140,19 @@ else {
 return false
 }
 }
+}
+function sopru(){
+
+Matter.Body.applyForce(futcha,{x:0,y:0},{x:0.01,y:0});
+ventinho.play();
+}
+function cilensio(){
+if(backyardigans.isPlaying()){
+  backyardigans.stop();
+}
+else{
+backyardigans.play();
+}
+
+
 }
